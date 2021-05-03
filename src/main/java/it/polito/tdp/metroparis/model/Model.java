@@ -1,16 +1,20 @@
 package it.polito.tdp.metroparis.model;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.jgrapht.Graph;
 import org.jgrapht.Graphs;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
+import org.jgrapht.traverse.BreadthFirstIterator;
+import org.jgrapht.traverse.DepthFirstIterator;
 
 import it.polito.tdp.metroparis.db.MetroDAO;
 
 public class Model {
-	Graph<Fermata, DefaultEdge> grafo;
+	private Graph<Fermata, DefaultEdge> grafo;
 	
 	public void creaGrafo() {
 		this.grafo = new SimpleGraph<>(DefaultEdge.class);
@@ -36,6 +40,48 @@ public class Model {
 		for(Connessione c : connessioni)
 			this.grafo.addEdge(c.getStazP(), c.getStazA());
 		
-		System.out.println(this.grafo);
+		//System.out.println(this.grafo);
+		
+		//Fermata f;
+		/*Set<DefaultEdge> archi = this.grafo.edgesOf(f);
+		for(DefaultEdge e : archi) {
+			Fermata f1 = this.grafo.getEdgeSource(e);
+			//oppure
+			Fermata f2 = this.grafo.getEdgeTarget(e);
+			if(f1.equals(f)) {
+				//f2 è quello che mi serve
+			}
+			else {
+				//mi serve f1
+			}
+			
+			Fermata f1 = Graphs.getOppositeVertex(this.grafo, e, f);
+		}*/
+		//List<Fermata> fermateAdiacenti = Graphs.successorListOf(this.grafo, f);
+		//Graphs.predecessorListOf(this.grafo, f);
+	}
+	
+	public List<Fermata> fermateRaggiungibili(Fermata partenza){
+		BreadthFirstIterator<Fermata, DefaultEdge> bfv = new BreadthFirstIterator<>(this.grafo, partenza);
+		
+		//DepthFirstIterator<Fermata, DefaultEdge> dfv = new DepthFirstIterator<Fermata, DefaultEdge>(this.grafo, partenza);
+		
+		
+		List<Fermata> result = new ArrayList<Fermata>();
+		
+		while(bfv.hasNext()) {
+			Fermata f = bfv.next();
+			result.add(f);
+		}
+		
+		return result;
+	}
+	
+	public Fermata trovaFermata(String nome) {
+		for(Fermata f : this.grafo.vertexSet()) {
+			if(f.getNome().equals(nome))
+				return f;
+		}
+		return null;
 	}
 }
